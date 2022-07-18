@@ -69,6 +69,7 @@ function RedirectPage() {
     return true;
   };
 
+  //TODO: check state string for validation(save between redirects, session storage)
   useEffect(() => {
     // if (searchParams.get("state") === state_str) {}
     getToken();
