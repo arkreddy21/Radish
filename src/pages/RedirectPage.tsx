@@ -62,18 +62,19 @@ function RedirectPage() {
       .then((res) => res.json())
       .then((data: any) => {
         // console.log(data);
-        setTokens({access: data.access_token, refresh: data.refresh_token});
+        setTokens({ access: data.access_token, refresh: data.refresh_token });
         navigate("/");
       });
 
     return true;
   };
 
-  //TODO: check state string for validation(save between redirects, session storage)
   useEffect(() => {
-    // if (searchParams.get("state") === state_str) {}
-    getToken();
-    // navigate("/");
+    if (searchParams.get("state") === localStorage.getItem("state_str")) {
+      getToken();
+      // localStorage.removeItem("state_str");
+      navigate("/");
+    }
   }, []);
 
   return (
