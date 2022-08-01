@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MantineProvider, ColorSchemeProvider, ColorScheme } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { HomePage, RedirectPage } from "./pages";
-import { useGlobalContext } from "./context";
 
 function App() {
-  const {colorScheme, setColorScheme} = useGlobalContext();
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({key:"colorScheme", defaultValue:"light"});
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 

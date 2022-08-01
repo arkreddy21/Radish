@@ -1,4 +1,5 @@
 import PostCard from "./PostCard";
-import ColorSchemeToggle from "./ColorSchemeToggle";
+import SideBar from "./SideBar";
+import TopBar from "./TopBar";
 
-export {PostCard, ColorSchemeToggle}
+export {PostCard, SideBar, TopBar}
