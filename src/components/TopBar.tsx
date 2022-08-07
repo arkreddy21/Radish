@@ -20,7 +20,7 @@ function TopBar() {
 
   return (
     <div>
-      <Header height={60} p="xs" sx={{ display: "flex", flexDirection: "row" }}>
+      <Header height={60} p="xs" sx={{ display: "flex", flexDirection: "row", gap: 15, alignItems: 'center' }}>
         {user ? (
           <p>{user}</p>
         ) : (

@@ -1,3 +1,7 @@
+import axios from "axios";
+
+const REDDIT = "https://www.reddit.com";
+const REDDIT_AUTH = "https://oauth.reddit.com";
 
 export const getUser = async (access: String) => {
   let response = await fetch("https://oauth.reddit.com/api/v1/me", {
@@ -42,7 +46,7 @@ function b2a(a: string) {
   );
 }
 
-export const refreshToken = async (refresh: String) => {
+export const refreshToken = async (refresh: string) => {
   const url =
     "https://www.reddit.com/api/v1/access_token?" +
     new URLSearchParams({
@@ -56,5 +60,22 @@ export const refreshToken = async (refresh: String) => {
     method: "POST",
   });
 
-  return await response.json()
+  return await response.json();
+};
+
+export const getSubs = async (access: string) => {
+  const res = await axios('https://oauth.reddit.com/subreddits/mine/subscriber',{
+    headers: { Authorization: `Bearer ${access}` },
+  });
+
+  return await res.data;
+};
+
+export const getHomePage = async (access: string) => {
+  const url: string = access ? "https://oauth.reddit.com" : "https://www.reddit.com/.json";
+
+  const res = await axios(url, {
+    headers: access? { Authorization: `Bearer ${access}` } : {},
+  });
+  return await res.data;
 };

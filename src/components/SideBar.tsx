@@ -14,7 +14,10 @@ import {
   IconTrendingUp,
   IconChartBar
 } from '@tabler/icons';
-import { UserButton } from './UserButton';
+import { UserButton } from './internal/UserButton';
+import { getSubs } from '../utils/RedditAPI';
+import { useGlobalContext } from '../context';
+import { useQuery } from 'react-query';
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -123,6 +126,9 @@ const collections = [
 
 function SideBar() {
   const { classes } = useStyles();
+  const {tokens} = useGlobalContext();
+  //TODO: only in tokens exist
+  const {isLoading, data} = useQuery('subs', ()=>getSubs(tokens.access))
 
   const mainLinks = links.map((link) => (
     <UnstyledButton key={link.label} className={classes.mainLink}>
@@ -148,12 +154,7 @@ function SideBar() {
   return (
     <Navbar height={700} width={{ sm: 300 }} p="md" className={classes.navbar}>
       <Navbar.Section className={classes.section}>
-        <UserButton
-          image="https://i.imgur.com/fGxgcDF.png"
-          name="Bob Rulebreaker"
-          email="Product owner"
-          icon={<IconSelector size={14} stroke={1.5} />}
-        />
+        <UserButton/>
       </Navbar.Section>
 
       <Navbar.Section className={classes.section}>

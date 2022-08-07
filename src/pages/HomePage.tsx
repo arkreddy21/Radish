@@ -1,45 +1,52 @@
-import { AppShell, Navbar, Header, Button } from "@mantine/core";
+import {
+  AppShell,
+  Navbar,
+  Header,
+  Button,
+  SegmentedControl,
+} from "@mantine/core";
 import { useQuery } from "react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PostCard, SideBar, TopBar } from "../components";
 import { useGlobalContext } from "../context";
-import { getUser } from "../utils/RedditAPI";
+import { getHomePage, getUser } from "../utils/RedditAPI";
 
 function HomePage() {
-  const { user, setUser, tokens } = useGlobalContext();
-  
+  const { user, setUser, setUserdata, tokens } = useGlobalContext();
+  const { isLoading, data } = useQuery(
+    "home-page",
+    async () => await getHomePage(tokens.access)
+  );
+  const [sort, setSort] = useState('best');
+
   useEffect(() => {
-    tokens.access &&
-      getUser(tokens.access).then((data: any) => {
-        console.log(data);
-        setUser(data.name);
-      });
-  }, [tokens]);
+    data ? console.log(data) : console.log("error occured");
+  }, [data]);
 
   return (
-    <AppShell
-      padding="md"
-      navbar={<SideBar/>}
-      header={<TopBar />}
-      styles={(theme) => ({
-        main: {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        },
-      })}
-    >
+    <>
       {/* Your application here */}
       <div>HomePage</div>
-
-      <PostCard
-        title="A quick brown fox"
-        body="small desc"
-        user="human"
-        sub="react"
+      <SegmentedControl value={sort} onChange={setSort}
+        data={[
+          { label: "best", value: "best" },
+          { label: "hot", value: "hot" },
+          { label: "new", value: "new" },
+          { label: "top", value: "top" },
+        ]}
       />
-    </AppShell>
+      {data?.data.children.map((child: any) => {
+        return (
+          <PostCard
+            title={child.data.title}
+            body={child.data.selftext}
+            user={child.data.author}
+            sub={child.data.subreddit}
+            flair={child.data.link_flair_richtext}
+          />
+        );
+      })}
+    </>
   );
 }
 export default HomePage;
