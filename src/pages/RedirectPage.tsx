@@ -40,7 +40,7 @@ function b2a(a: string) {
 function RedirectPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { state_str, setUser, tokens, setTokens } = useGlobalContext();
+  const { state_str, tokens, setTokens } = useGlobalContext();
   const code = searchParams.get("code");
   const authvalue = `${import.meta.env.VITE_CLIENT_ID}:`;
 

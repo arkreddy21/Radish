@@ -12,22 +12,26 @@ import { useGlobalContext } from "../context";
 import { getHomePage, getUser } from "../utils/RedditAPI";
 
 function HomePage() {
-  const { user, setUser, setUserdata, tokens } = useGlobalContext();
+  const { user, setUserdata, tokens, isEnabled } = useGlobalContext();
   const { isLoading, data } = useQuery(
     "home-page",
-    async () => await getHomePage(tokens.access)
+    async () => await getHomePage(tokens.access),
+    { enabled: isEnabled }
   );
-  const [sort, setSort] = useState('best');
+  const [sort, setSort] = useState("best");
 
   useEffect(() => {
     data ? console.log(data) : console.log("error occured");
   }, [data]);
 
+  if (isLoading) return <h3>Loading</h3>;
+
   return (
     <>
-      {/* Your application here */}
       <div>HomePage</div>
-      <SegmentedControl value={sort} onChange={setSort}
+      <SegmentedControl
+        value={sort}
+        onChange={setSort}
         data={[
           { label: "best", value: "best" },
           { label: "hot", value: "hot" },
@@ -35,18 +39,13 @@ function HomePage() {
           { label: "top", value: "top" },
         ]}
       />
-      {data?.data.children.map((child: any) => {
-        return (
-          <PostCard
-            title={child.data.title}
-            body={child.data.selftext}
-            user={child.data.author}
-            sub={child.data.subreddit}
-            flair={child.data.link_flair_richtext}
-          />
-        );
-      })}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {data?.data.children.map((child: any) => {
+          return <PostCard data={child.data} />;
+        })}
+      </div>
     </>
   );
 }
+
 export default HomePage;

@@ -28,9 +28,7 @@ const useStyles = createStyles((theme) => ({
     }
   }
 }));
-SubredditPage
-SubredditPage
-SubredditPage
+
 export function UserButton() {
   const { classes } = useStyles();
   const { userdata } = useGlobalContext();

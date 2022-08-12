@@ -8,6 +8,7 @@ const AppProvider: React.FC<{children: JSX.Element}> = ({children}) => {
   
   const [tokens,setTokens] = useLocalStorage({key:'tokens', defaultValue:{access:'',refresh:''}})
   const [user, setUser] = useState('')
+  const [isEnabled, setEnabled] = useState(false)
   const [userdata, setUserdata] = useState()
 
   const state_str = Math.random().toString(36).substring(2);
@@ -16,15 +17,16 @@ const AppProvider: React.FC<{children: JSX.Element}> = ({children}) => {
   },[])
 
   useEffect(() => {
-    tokens.access &&
+    tokens.access ?
       getUser(tokens.access).then((data: any) => {
         console.log(data);
         setUserdata(data)
         setUser(data.name);
-      });
+        setEnabled(true)
+      }) : setEnabled(true)
   }, [tokens]);
 
-  return <AppContext.Provider value={{tokens,setTokens, state_str, user, setUser, userdata, setUserdata}}>
+  return <AppContext.Provider value={{tokens,setTokens, state_str, user, userdata, setUserdata, isEnabled}}>
     {children}
   </AppContext.Provider>
 }

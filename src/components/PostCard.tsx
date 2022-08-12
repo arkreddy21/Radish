@@ -1,12 +1,11 @@
-import { ActionIcon, Avatar, Group, Text, createStyles, Badge } from "@mantine/core"
+import { ActionIcon, Avatar, Group, Text, createStyles, Badge, Card } from "@mantine/core"
 import {IconArrowBigDown, IconArrowBigTop, IconDots, IconMessage, IconStar} from '@tabler/icons'
+import ReactMarkdown from "react-markdown";
+import MarkdownPreview from '@uiw/react-markdown-preview';
+import rehypeRaw from "rehype-raw";
 
 interface PostProps {
-  title: String,
-  body: any,
-  user:String,
-  sub:String,
-  flair:any
+  data:any
 }
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -22,8 +21,13 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   }
 }))
 
-function PostCard({title,body,user,sub,flair}:PostProps) {
+function PostCard({data}:PostProps) {
   const { classes } = useStyles();
+  const title= data.title
+  const body= data.selftext
+  const user= data.author
+  const sub= data.subreddit
+  const flair= data.link_flair_richtext
 
   return (
     <div className={classes.wrapper}>
@@ -32,11 +36,14 @@ function PostCard({title,body,user,sub,flair}:PostProps) {
         <Text>{sub}</Text>
         <Text>{user}</Text>
       </Group>
-      <Text lineClamp={2}>{title}</Text>
+      <Text weight={700} lineClamp={2}>{title}</Text>
       {flair&&flair[0]&&<Badge>{flair[0].t}</Badge>}
-      <Text lineClamp={4}>{body}</Text>
+      {/* <Text lineClamp={4}>{body}</Text> */}
+      <ReactMarkdown children={body} rehypePlugins={[rehypeRaw]} />
+      
       <Group>
       <ActionIcon variant="filled"><IconArrowBigTop size={16} /></ActionIcon>
+      <Text>{data.score}</Text>
       <ActionIcon variant="transparent"><IconArrowBigDown size={16} /></ActionIcon>
       <ActionIcon variant="transparent"><IconMessage size={16} /></ActionIcon>
       <ActionIcon variant="transparent"><IconStar size={16} /></ActionIcon>
@@ -45,4 +52,5 @@ function PostCard({title,body,user,sub,flair}:PostProps) {
     </div>
   )
 }
+
 export default PostCard

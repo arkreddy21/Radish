@@ -6,18 +6,18 @@ import {
   Group,
   ActionIcon,
   Tooltip,
-} from '@mantine/core';
+} from "@mantine/core";
 import {
   IconPlus,
   IconSelector,
   IconHome2,
   IconTrendingUp,
-  IconChartBar
-} from '@tabler/icons';
-import { UserButton } from './internal/UserButton';
-import { getSubs } from '../utils/RedditAPI';
-import { useGlobalContext } from '../context';
-import { useQuery } from 'react-query';
+  IconChartBar,
+} from "@tabler/icons";
+import { UserButton } from "./internal/UserButton";
+import { getSubs } from "../utils/RedditAPI";
+import { useGlobalContext } from "../context";
+import { useQuery } from "react-query";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -29,9 +29,11 @@ const useStyles = createStyles((theme) => ({
     marginRight: -theme.spacing.md,
     marginBottom: theme.spacing.md,
 
-    '&:not(:last-of-type)': {
+    "&:not(:last-of-type)": {
       borderBottom: `1px solid ${
-        theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[3]
       }`,
     },
   },
@@ -43,37 +45,46 @@ const useStyles = createStyles((theme) => ({
   },
 
   mainLink: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
     fontSize: theme.fontSizes.xs,
     padding: `8px ${theme.spacing.xs}px`,
     borderRadius: theme.radius.sm,
     fontWeight: 500,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+    color:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[0]
+        : theme.colors.gray[7],
 
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[0],
+      color: theme.colorScheme === "dark" ? theme.white : theme.black,
     },
   },
 
   mainLinkInner: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     flex: 1,
   },
 
   mainLinkIcon: {
     marginRight: theme.spacing.sm,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+    color:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[2]
+        : theme.colors.gray[6],
   },
 
   mainLinkBadge: {
     padding: 0,
     width: 20,
     height: 20,
-    pointerEvents: 'none',
+    pointerEvents: "none",
   },
 
   collections: {
@@ -89,46 +100,62 @@ const useStyles = createStyles((theme) => ({
   },
 
   collectionLink: {
-    display: 'block',
+    display: "block",
     padding: `8px ${theme.spacing.xs}px`,
-    textDecoration: 'none',
+    textDecoration: "none",
     borderRadius: theme.radius.sm,
     fontSize: theme.fontSizes.xs,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+    color:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[0]
+        : theme.colors.gray[7],
     lineHeight: 1,
     fontWeight: 500,
 
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    img: {
+      height: 24,
+    },
+
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[0],
+      color: theme.colorScheme === "dark" ? theme.white : theme.black,
     },
   },
 }));
 
 const links = [
-  { icon: IconHome2, label: 'Home'},
-  { icon: IconTrendingUp, label: 'Popular'},
-  { icon: IconChartBar, label: 'All' },
+  { icon: IconHome2, label: "Home" },
+  { icon: IconTrendingUp, label: "Popular" },
+  { icon: IconChartBar, label: "All" },
 ];
 
+const scratch =
+  "https://b.thumbs.redditmedia.com/fMiXMpPkcTf7EWdUY897S7bKeqPMh5lkVOoocfkGV1w.png";
 const collections = [
-  { icon: '👍', label: 'Sales' },
-  { icon: '🚚', label: 'Deliveries' },
-  { icon: '💸', label: 'Discounts' },
-  { icon: '💰', label: 'Profits' },
-  { icon: '✨', label: 'Reports' },
-  { icon: '🛒', label: 'Orders' },
-  { icon: '📅', label: 'Events' },
-  { icon: '🙈', label: 'Debts' },
-  { icon: '💁‍♀️', label: 'Customers' },
+  { icon: scratch, label: "Sales" },
+  { icon: scratch, label: "Deliveries" },
+  { icon: scratch, label: "Discounts" },
+  { icon: scratch, label: "Profits" },
+  { icon: scratch, label: "Reports" },
+  { icon: scratch, label: "Orders" },
+  { icon: scratch, label: "Events" },
+  { icon: scratch, label: "Debts" },
+  { icon: scratch, label: "Customers" },
 ];
-
 
 function SideBar() {
   const { classes } = useStyles();
-  const {tokens} = useGlobalContext();
-  //TODO: only in tokens exist
-  const {isLoading, data} = useQuery('subs', ()=>getSubs(tokens.access))
+  const { tokens, isEnabled } = useGlobalContext();
+  //TODO: implement subs correctly
+  /* const { isLoading, data } = useQuery("subs", () => getSubs(tokens.access), {
+    enabled: isEnabled && tokens.access!=='',
+    initialData: collections,
+    placeholderData: collections,
+    onSuccess: ()=>{console.log('this shit happened')}
+  }); */
 
   const mainLinks = links.map((link) => (
     <UnstyledButton key={link.label} className={classes.mainLink}>
@@ -139,14 +166,16 @@ function SideBar() {
     </UnstyledButton>
   ));
 
-  const collectionLinks = collections.map((collection) => (
+  const collectionLinks = collections.map((collection:any) => (
     <a
       href="/"
       onClick={(event) => event.preventDefault()}
       key={collection.label}
       className={classes.collectionLink}
     >
-      <span style={{ marginRight: 9, fontSize: 16 }}>{collection.icon}</span>{" "}
+      <span style={{ marginRight: 9, fontSize: 16 }}>
+        <img src={collection.icon} />
+      </span>{" "}
       {collection.label}
     </a>
   ));
@@ -154,7 +183,7 @@ function SideBar() {
   return (
     <Navbar height={700} width={{ sm: 300 }} p="md" className={classes.navbar}>
       <Navbar.Section className={classes.section}>
-        <UserButton/>
+        <UserButton />
       </Navbar.Section>
 
       <Navbar.Section className={classes.section}>
@@ -178,4 +207,4 @@ function SideBar() {
   );
 }
 
-export default SideBar
+export default SideBar;
