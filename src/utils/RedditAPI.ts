@@ -79,3 +79,11 @@ export const getHomePage = async (access: string) => {
   });
   return await res.data;
 };
+
+export const getAboutsub = async (access:string, subid: string|undefined) => {
+  const url: string = access ? `https://oauth.reddit.com/r/${subid}/about` : `https://www.reddit.com/r/${subid}/about.json`;
+  const res = await axios(url, {
+    headers: access? { Authorization: `Bearer ${access}` } : {},
+  });
+  return await res.data;
+}

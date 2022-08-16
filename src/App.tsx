@@ -22,17 +22,17 @@ function App() {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        theme={{ colorScheme }}
-        withGlobalStyles
-        withNormalizeCSS
+    <BrowserRouter>
+      <ColorSchemeProvider
+        colorScheme={colorScheme}
+        toggleColorScheme={toggleColorScheme}
       >
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
+        <MantineProvider
+          theme={{ colorScheme }}
+          withGlobalStyles
+          withNormalizeCSS
+        >
+          <QueryClientProvider client={queryClient}>
             <AppShell
               padding="md"
               navbar={<SideBar />}
@@ -50,12 +50,13 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/redirect" element={<RedirectPage />} />
                 <Route path="/r/:subid" element={<SubredditPage />} />
+                <Route path="*" element={<h1>404 not found</h1>} />
               </Routes>
             </AppShell>
-          </BrowserRouter>
-        </QueryClientProvider>
-      </MantineProvider>
-    </ColorSchemeProvider>
+          </QueryClientProvider>
+        </MantineProvider>
+      </ColorSchemeProvider>
+    </BrowserRouter>
   );
 }
 
