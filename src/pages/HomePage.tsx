@@ -14,8 +14,7 @@ import { getHomePage, getUser } from "../utils/RedditAPI";
 function HomePage() {
   const { user, setUserdata, tokens, isEnabled } = useGlobalContext();
   const { isLoading, data } = useQuery(
-    "home-page",
-    async () => await getHomePage(tokens.access),
+    "home-page", () => getHomePage(tokens.access),
     { enabled: isEnabled }
   );
   const [sort, setSort] = useState("best");
@@ -41,7 +40,7 @@ function HomePage() {
       />
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {data?.data.children.map((child: any) => {
-          return <PostCard data={child.data} />;
+          return <PostCard data={child.data} access = {tokens.access} />;
         })}
       </div>
     </>

@@ -17,9 +17,11 @@ import {
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import { castVote } from "../utils/RedditAPI";
 
 interface PostProps {
   data: any;
+  access: string;
 }
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -38,16 +40,33 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
 }));
 
-function PostCard({ data }: PostProps) {
+function PostCard({ data, access }: PostProps) {
   const { classes } = useStyles();
   const title = data.title;
   const body = data.selftext;
   const user = data.author;
   const sub = data.subreddit;
   const flair = data.link_flair_richtext;
-  const [vote, setVote] = useState(0);
+  const [vote, setVote] = useState(data.likes);
 
-  const handleClick = () => {};
+  const handleClick = (dir: number) => {
+    if (vote === null) {
+      castVote(access, data.name, dir).then((res) => {
+        res === 200 && setVote(dir === 1 ? true : false);
+        data.score += dir;
+      });
+    } else if ((vote === true && dir === 1) || (vote === false && dir === -1)) {
+      castVote(access, data.name, 0).then((res) => {
+        res === 200 && setVote(null);
+        data.score -= dir;
+      });
+    } else {
+      castVote(access, data.name, dir).then((res) => {
+        res === 200 && setVote(dir === 1 ? true : false);
+        dir === 1 ? data.score += 2 : data.score -= 2;
+      });
+    }
+  };
 
   return (
     <div className={classes.wrapper}>
@@ -61,15 +80,21 @@ function PostCard({ data }: PostProps) {
       </Text>
       {flair && flair[0] && <Badge>{flair[0].t}</Badge>}
       {/* <Text lineClamp={4}>{body}</Text> */}
-      <ReactMarkdown children={body.slice(0,180)} rehypePlugins={[rehypeRaw]} />
+      <ReactMarkdown
+        children={body.slice(0, 180)}
+        rehypePlugins={[rehypeRaw]}
+      />
 
       <Group>
-        <ActionIcon variant="transparent" onClick={handleClick}>
-          <ArrowFatUp size={18} weight={vote == 1 ? "fill" : "regular"} />
+        <ActionIcon variant="transparent" onClick={() => handleClick(1)}>
+          <ArrowFatUp size={18} weight={vote === true ? "fill" : "regular"} />
         </ActionIcon>
         <Text>{data.score}</Text>
-        <ActionIcon variant="transparent" onClick={handleClick}>
-          <ArrowFatDown size={18} weight={vote == -1 ? "fill" : "regular"} />
+        <ActionIcon variant="transparent" onClick={() => handleClick(-1)}>
+          <ArrowFatDown
+            size={18}
+            weight={vote === false ? "fill" : "regular"}
+          />
         </ActionIcon>
         <ActionIcon variant="transparent">
           <ChatText size={18} />

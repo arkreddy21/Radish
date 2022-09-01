@@ -87,3 +87,22 @@ export const getAboutsub = async (access:string, subid: string|undefined) => {
   });
   return await res.data;
 }
+
+export const getSubPosts = async (access:string, subid: string|undefined) => {
+  const url: string = access ? `https://oauth.reddit.com/r/${subid}` : `https://www.reddit.com/r/${subid}.json`;
+  const res = await axios(url, {
+    headers: access? { Authorization: `Bearer ${access}` } : {},
+  });
+  return await res.data;
+}
+
+export const castVote = async (access:string, name: string, dir:number) => {
+  const url = "https://oauth.reddit.com/api/vote"
+  const form = new FormData()
+  form.append("dir", dir.toString())
+  form.append("id", name)
+  let res = await axios.post(url, form, {
+    headers: {Authorization: `Bearer ${access}`},
+  })
+  return res.status
+}
