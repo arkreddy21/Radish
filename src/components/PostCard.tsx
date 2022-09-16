@@ -5,7 +5,6 @@ import {
   Text,
   createStyles,
   Badge,
-  Card,
 } from "@mantine/core";
 import {
   ArrowFatUp,
@@ -16,10 +15,11 @@ import {
 } from "phosphor-react";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 import rehypeRaw from "rehype-raw";
 import { castVote } from "../utils/RedditAPI";
 
-interface PostProps {
+interface CardProps {
   data: any;
   access: string;
 }
@@ -40,14 +40,13 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
 }));
 
-function PostCard({ data, access }: PostProps) {
+function PostCard({ data, access }: CardProps) {
   const { classes } = useStyles();
-  const title = data.title;
-  const body = data.selftext;
-  const user = data.author;
-  const sub = data.subreddit;
+  const navigate = useNavigate();
   const flair = data.link_flair_richtext;
-  const [vote, setVote] = useState(data.likes);
+  const formatter = new Intl.NumberFormat('en',{notation:'compact'})
+  
+  const [vote, setVote] = useState(data.likes); //reddit api: likes = (true, null, false) for (up, no, down)votes
 
   const handleClick = (dir: number) => {
     if (vote === null) {
@@ -72,24 +71,26 @@ function PostCard({ data, access }: PostProps) {
     <div className={classes.wrapper}>
       <Group>
         <Avatar radius="xl" />
-        <Text>{sub}</Text>
-        <Text>{user}</Text>
+        <Text variant="link" onClick={()=>{navigate(`/r/${data.subreddit}`)}} >{data.subreddit}</Text>
+        <Text >{data.author}</Text>
       </Group>
+      <section onClick={()=>navigate(`${data.permalink}`)} >
       <Text weight={700} lineClamp={2}>
-        {title}
+        {data.title}
       </Text>
       {flair && flair[0] && <Badge>{flair[0].t}</Badge>}
       {/* <Text lineClamp={4}>{body}</Text> */}
       <ReactMarkdown
-        children={body.slice(0, 180)}
+        children={data.selftext.slice(0, 180)}
         rehypePlugins={[rehypeRaw]}
       />
+      </section>
 
       <Group>
         <ActionIcon variant="transparent" onClick={() => handleClick(1)}>
           <ArrowFatUp size={18} weight={vote === true ? "fill" : "regular"} />
         </ActionIcon>
-        <Text>{data.score}</Text>
+        <Text>{formatter.format(data.score)}</Text>
         <ActionIcon variant="transparent" onClick={() => handleClick(-1)}>
           <ArrowFatDown
             size={18}

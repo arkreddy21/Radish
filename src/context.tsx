@@ -1,6 +1,6 @@
 import React, {useState, createContext, useContext, useEffect} from "react";
 import { useLocalStorage } from "@mantine/hooks";
-import { getUser } from "./utils/RedditAPI";
+import { getUser, refreshToken } from "./utils/RedditAPI";
 
 const AppContext = createContext<any>({});
 
@@ -13,17 +13,31 @@ const AppProvider: React.FC<{children: JSX.Element}> = ({children}) => {
 
   const state_str = Math.random().toString(36).substring(2);
   useEffect(()=>{
-  localStorage.getItem('state_str') || localStorage.setItem('state_str',state_str)
+    localStorage.getItem('state_str') || localStorage.setItem('state_str',state_str)
   },[])
 
+  useEffect(()=>{console.log(tokens)},[tokens])
+
+  //TODO: both cases running in ternanry operator. token empty initially even when stored locally
   useEffect(() => {
     tokens.access ?
-      getUser(tokens.access).then((data: any) => {
-        console.log(data);
-        setUserdata(data)
-        setUser(data.name);
-        setEnabled(true)
-      }) : setEnabled(true)
+      getUser(tokens.access).then((res) => {
+        console.log(res)
+        if (res.status===401) {
+          refreshToken(tokens.refresh).then((data:any)=>{
+            console.log("auto refreshing token")
+            console.log(data)
+            setTokens({...tokens,access: data.access_token})
+          })
+        } else {
+          console.log(res.status);
+          setUserdata(res.data)
+          setUser(res.data.name);
+          //TODO: setEnabled going true even when commented
+          console.log("inside case 1")
+          setEnabled(true)
+        }
+      }) : (console.log("inside case 2"),setEnabled(true))
   }, [tokens]);
 
   return <AppContext.Provider value={{tokens,setTokens, state_str, user, userdata, setUserdata, isEnabled}}>

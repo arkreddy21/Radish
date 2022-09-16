@@ -7,9 +7,8 @@ import {
 } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useLocalStorage } from "@mantine/hooks";
-import { HomePage, RedirectPage, SubredditPage } from "./pages";
+import { HomePage, PostPage, RedirectPage, SubredditPage } from "./pages";
 import { SideBar, TopBar } from "./components";
-import React from "react";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +49,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/redirect" element={<RedirectPage />} />
                 <Route path="/r/:subid" element={<SubredditPage />} />
+                <Route path="/r/:subid/comments/:id/:name" element={<PostPage />} />
                 <Route path="*" element={<h1>404 not found</h1>} />
               </Routes>
             </AppShell>

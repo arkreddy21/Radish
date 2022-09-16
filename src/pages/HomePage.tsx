@@ -1,27 +1,23 @@
-import {
-  AppShell,
-  Navbar,
-  Header,
-  Button,
-  SegmentedControl,
-} from "@mantine/core";
+import {SegmentedControl} from "@mantine/core";
 import { useQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { PostCard, SideBar, TopBar } from "../components";
+import { PostCard} from "../components";
 import { useGlobalContext } from "../context";
-import { getHomePage, getUser } from "../utils/RedditAPI";
+import { getHomePage} from "../utils/RedditAPI";
 
 function HomePage() {
   const { user, setUserdata, tokens, isEnabled } = useGlobalContext();
+  //TODO: useQuery fetching even when enabled: false?
+  //TODO? include access token in query key
   const { isLoading, data } = useQuery(
-    "home-page", () => getHomePage(tokens.access),
+    ["home-page",tokens, isEnabled], () => getHomePage(tokens.access),
     { enabled: isEnabled }
   );
   const [sort, setSort] = useState("best");
 
   useEffect(() => {
-    data ? console.log(data) : console.log("error occured");
-  }, [data]);
+    console.log(isEnabled)
+  }, [isEnabled]);
 
   if (isLoading) return <h3>Loading</h3>;
 

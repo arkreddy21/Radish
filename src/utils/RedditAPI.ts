@@ -4,12 +4,9 @@ const REDDIT = "https://www.reddit.com";
 const REDDIT_AUTH = "https://oauth.reddit.com";
 
 export const getUser = async (access: String) => {
-  let response = await fetch("https://oauth.reddit.com/api/v1/me", {
-    headers: {
-      Authorization: `Bearer ${access}`,
-    },
-  });
-  return await response.json();
+  return await axios("https://oauth.reddit.com/api/v1/me", {
+    headers: { Authorization: `Bearer ${access}` },
+  }).then(res=> res).catch(err=> err.response);
 };
 
 function b2a(a: string) {
@@ -47,20 +44,24 @@ function b2a(a: string) {
 }
 
 export const refreshToken = async (refresh: string) => {
-  const url =
+  const url0 =
     "https://www.reddit.com/api/v1/access_token?" +
     new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: `${refresh}`,
     });
+  
+  const url = "https://www.reddit.com/api/v1/access_token"
+  const form = new FormData()
+  form.append("grant_type", "refresh_token")
+  form.append("refresh_token", refresh)
   const authvalue = `${import.meta.env.VITE_CLIENT_ID}:`;
 
-  let response = await fetch(url, {
+  let res = await axios.post(url, form, {
     headers: { Authorization: `Basic ${b2a(authvalue)}` },
-    method: "POST",
   });
 
-  return await response.json();
+  return res.data;
 };
 
 export const getSubs = async (access: string) => {
@@ -68,7 +69,7 @@ export const getSubs = async (access: string) => {
     headers: { Authorization: `Bearer ${access}` },
   });
 
-  return await res.data;
+  return res.data;
 };
 
 export const getHomePage = async (access: string) => {
@@ -77,7 +78,7 @@ export const getHomePage = async (access: string) => {
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
   });
-  return await res.data;
+  return res.data;
 };
 
 export const getAboutsub = async (access:string, subid: string|undefined) => {
@@ -85,7 +86,7 @@ export const getAboutsub = async (access:string, subid: string|undefined) => {
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
   });
-  return await res.data;
+  return res.data;
 }
 
 export const getSubPosts = async (access:string, subid: string|undefined) => {
@@ -93,7 +94,7 @@ export const getSubPosts = async (access:string, subid: string|undefined) => {
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
   });
-  return await res.data;
+  return res.data;
 }
 
 export const castVote = async (access:string, name: string, dir:number) => {
@@ -105,4 +106,12 @@ export const castVote = async (access:string, name: string, dir:number) => {
     headers: {Authorization: `Bearer ${access}`},
   })
   return res.status
+}
+
+export const getComments = async (access:string, subid:string|undefined, id:string|undefined, name:string|undefined) => {
+  const url: string = access ? `https://oauth.reddit.com/r/${subid}/comments/${id}/${name}` : `https://www.reddit.com/r/${subid}/comments/${id}/${name}.json`;
+  const res = await axios(url, {
+    headers: access? { Authorization: `Bearer ${access}` } : {},
+  });
+  return res.data
 }

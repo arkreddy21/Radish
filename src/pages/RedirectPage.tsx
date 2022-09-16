@@ -1,4 +1,5 @@
 import { Button } from "@mantine/core";
+import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useGlobalContext } from "../context";
@@ -44,22 +45,26 @@ function RedirectPage() {
   const code = searchParams.get("code");
   const authvalue = `${import.meta.env.VITE_CLIENT_ID}:`;
 
-  const getToken = async () => {
+  const getToken = () => {
     const url =
-      "https://www.reddit.com/api/v1/access_token?" +
-      new URLSearchParams({
+      "https://www.reddit.com/api/v1/access_token"
+/*       new URLSearchParams({
         grant_type: "authorization_code",
         code: `${code}`,
         redirect_uri: "http://localhost:5173/redirect",
-      });
+      }); */
 
-    await fetch(url, {
+    const form = new FormData()
+    form.append("grant_type", "authorization_code")
+    form.append("code", code||'')
+    form.append("redirect_uri", "http://localhost:5173/redirect")
+  
+    axios.post(url, form, {
       headers: {
         Authorization: `Basic ${b2a(authvalue)}`,
       },
-      method: "POST",
     })
-      .then((res) => res.json())
+      .then((res) => res.data)
       .then((data: any) => {
         // console.log(data);
         setTokens({ access: data.access_token, refresh: data.refresh_token });
@@ -71,6 +76,7 @@ function RedirectPage() {
 
   useEffect(() => {
     if (searchParams.get("state") === localStorage.getItem("state_str")) {
+      console.log('getting tokens from api')
       getToken();
       // localStorage.removeItem("state_str");
       navigate("/");

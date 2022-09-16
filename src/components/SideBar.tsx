@@ -18,6 +18,7 @@ import { UserButton } from "./internal/UserButton";
 import { getSubs } from "../utils/RedditAPI";
 import { useGlobalContext } from "../context";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -127,9 +128,9 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const links = [
-  { icon: IconHome2, label: "Home" },
-  { icon: IconTrendingUp, label: "Popular" },
-  { icon: IconChartBar, label: "All" },
+  { icon: IconHome2, label: "Home", path:"/" },
+  { icon: IconTrendingUp, label: "Popular", path:"/r/popular" },
+  { icon: IconChartBar, label: "All", path:"/r/all" },
 ];
 
 const scratch =
@@ -149,6 +150,7 @@ const collections = [
 function SideBar() {
   const { classes } = useStyles();
   const { tokens, isEnabled } = useGlobalContext();
+  const navigate = useNavigate();
   //TODO: implement subs correctly
   /* const { isLoading, data } = useQuery("subs", () => getSubs(tokens.access), {
     enabled: isEnabled && tokens.access!=='',
@@ -158,7 +160,7 @@ function SideBar() {
   }); */
 
   const mainLinks = links.map((link) => (
-    <UnstyledButton key={link.label} className={classes.mainLink}>
+    <UnstyledButton key={link.label} className={classes.mainLink} onClick={()=>{navigate(`${link.path}`)}} >
       <div className={classes.mainLinkInner}>
         <link.icon size={20} className={classes.mainLinkIcon} stroke={1.5} />
         <span>{link.label}</span>
