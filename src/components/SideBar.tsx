@@ -6,6 +6,8 @@ import {
   Group,
   ActionIcon,
   Tooltip,
+  ScrollArea,
+  Image,
 } from "@mantine/core";
 import {
   IconPlus,
@@ -19,6 +21,7 @@ import { getSubs } from "../utils/RedditAPI";
 import { useGlobalContext } from "../context";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -29,6 +32,7 @@ const useStyles = createStyles((theme) => ({
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
     marginBottom: theme.spacing.md,
+    // overflow: 'scrollY',
 
     "&:not(:last-of-type)": {
       borderBottom: `1px solid ${
@@ -115,6 +119,7 @@ const useStyles = createStyles((theme) => ({
 
     img: {
       height: 24,
+      borderRadius: '50%',
     },
 
     "&:hover": {
@@ -135,29 +140,39 @@ const links = [
 
 const scratch =
   "https://b.thumbs.redditmedia.com/fMiXMpPkcTf7EWdUY897S7bKeqPMh5lkVOoocfkGV1w.png";
-const collections = [
-  { icon: scratch, label: "Sales" },
-  { icon: scratch, label: "Deliveries" },
-  { icon: scratch, label: "Discounts" },
-  { icon: scratch, label: "Profits" },
-  { icon: scratch, label: "Reports" },
-  { icon: scratch, label: "Orders" },
-  { icon: scratch, label: "Events" },
-  { icon: scratch, label: "Debts" },
-  { icon: scratch, label: "Customers" },
+const collections0:any = [
+  // { icon: scratch, label: "Sales" },
+  // { icon: scratch, label: "Deliveries" },
+  // { icon: scratch, label: "Discounts" },
+  // { icon: scratch, label: "Profits" },
+  // { icon: scratch, label: "Reports" },
+  // { icon: scratch, label: "Orders" },
+  // { icon: scratch, label: "Sales" },
+  // { icon: scratch, label: "Deliveries" },
+  // { icon: scratch, label: "Discounts" },
+  // { icon: scratch, label: "Profits" },
+  // { icon: scratch, label: "Reports" },
+  // { icon: scratch, label: "Orders" },
 ];
 
 function SideBar() {
   const { classes } = useStyles();
+  const [opened, setOpened] = useState(false);
   const { tokens, isEnabled } = useGlobalContext();
   const navigate = useNavigate();
+  const [collections, setCollections] = useState(collections0)
   //TODO: implement subs correctly
-  /* const { isLoading, data } = useQuery("subs", () => getSubs(tokens.access), {
+  const { isLoading, data } = useQuery("subs", () => getSubs(tokens.access), {
     enabled: isEnabled && tokens.access!=='',
     initialData: collections,
     placeholderData: collections,
-    onSuccess: ()=>{console.log('this shit happened')}
-  }); */
+    onSuccess: (Tdata)=>{
+      let data = Tdata.data.children.map((child:any)=>{
+        return {icon: child.data.community_icon.split("?")[0] || child.data.icon_img , label:child.data.display_name}
+      })
+      setCollections(data)
+    }
+  });
 
   const mainLinks = links.map((link) => (
     <UnstyledButton key={link.label} className={classes.mainLink} onClick={()=>{navigate(`${link.path}`)}} >
@@ -169,9 +184,8 @@ function SideBar() {
   ));
 
   const collectionLinks = collections.map((collection:any) => (
-    <a
-      href="/"
-      onClick={(event) => event.preventDefault()}
+    <div
+      onClick={()=>navigate(`/r/${collection.label}`)}
       key={collection.label}
       className={classes.collectionLink}
     >
@@ -179,11 +193,11 @@ function SideBar() {
         <img src={collection.icon} />
       </span>{" "}
       {collection.label}
-    </a>
+    </div>
   ));
 
   return (
-    <Navbar height={700} width={{ sm: 300 }} p="md" className={classes.navbar}>
+    <Navbar width={{ sm: 300 }} p="md" hiddenBreakpoint="sm" hidden={!opened} className={classes.navbar}>
       <Navbar.Section className={classes.section}>
         <UserButton />
       </Navbar.Section>
@@ -192,7 +206,7 @@ function SideBar() {
         <div className={classes.mainLinks}>{mainLinks}</div>
       </Navbar.Section>
 
-      <Navbar.Section className={classes.section}>
+      <Navbar.Section grow component={ScrollArea} className={classes.section}>
         <Group className={classes.collectionsHeader} position="apart">
           <Text size="xs" weight={500} color="dimmed">
             Subscriptions
@@ -203,7 +217,9 @@ function SideBar() {
             </ActionIcon>
           </Tooltip>
         </Group>
+        {/* <ScrollArea> */}
         <div className={classes.collections}>{collectionLinks}</div>
+        {/* </ScrollArea> */}
       </Navbar.Section>
     </Navbar>
   );

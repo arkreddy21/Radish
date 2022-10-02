@@ -15,7 +15,7 @@ function SubredditPage() {
 
   return (
     <>
-      <Card>
+      {subid !=='popular' && subid!=='all' &&(<Card>
         <Card.Section>
           <Image
             src={about.data?.data.banner_background_image.split("?")[0]}
@@ -31,7 +31,7 @@ function SubredditPage() {
         </Group>
         <Text>{`${about.data?.data.subscribers} members`}</Text>
         <Text>{about.data?.data.public_description}</Text>
-      </Card>
+      </Card>)}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
         {posts.data?.data.children.map((child: any) => {

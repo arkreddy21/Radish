@@ -72,11 +72,12 @@ export const getSubs = async (access: string) => {
   return res.data;
 };
 
-export const getHomePage = async (access: string) => {
+export const getHomePage = async (access: string, after?:string) => {
   const url: string = access ? "https://oauth.reddit.com" : "https://www.reddit.com/.json";
-
+  after ? console.log(after) : console.log("no after came")
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
+    params: after? {"after":after, "raw_json": '1'} : {}
   });
   return res.data;
 };
@@ -93,6 +94,7 @@ export const getSubPosts = async (access:string, subid: string|undefined) => {
   const url: string = access ? `https://oauth.reddit.com/r/${subid}` : `https://www.reddit.com/r/${subid}.json`;
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
+    params:{"raw_json":'1'}
   });
   return res.data;
 }
@@ -112,6 +114,7 @@ export const getComments = async (access:string, subid:string|undefined, id:stri
   const url: string = access ? `https://oauth.reddit.com/r/${subid}/comments/${id}/${name}` : `https://www.reddit.com/r/${subid}/comments/${id}/${name}.json`;
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
+    params:{"raw_json":'1'}
   });
   return res.data
 }

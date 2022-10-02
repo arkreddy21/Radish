@@ -11,13 +11,6 @@ function TopBar() {
   )}&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fredirect&duration=permanent&scope=identity mysubreddits read vote submit report save subscribe history`;
   const { user,tokens,setTokens } = useGlobalContext();
 
-  const handleRefresh=()=>{
-    refreshToken(tokens.refresh).then((data:any)=>{
-      console.log(data)
-      setTokens({...tokens,access: data.access_token})
-    })
-  }
-
   return (
     <div>
       <Header height={60} p="xs" sx={{ display: "flex", flexDirection: "row", gap: 15, alignItems: 'center' }}>
@@ -28,7 +21,6 @@ function TopBar() {
             login
           </Button>
         )}
-        <Button onClick={handleRefresh} >refresh token</Button>
         <ColorSchemeToggle />
       </Header>
     </div>
