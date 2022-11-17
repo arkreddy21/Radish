@@ -10,7 +10,13 @@ import { useLocalStorage } from "@mantine/hooks";
 import { HomePage, PostPage, RedirectPage, SubredditPage } from "./pages";
 import { SideBar, TopBar } from "./components";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({

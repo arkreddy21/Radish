@@ -1,4 +1,4 @@
-import { Header, Button } from "@mantine/core";
+import { Header, Button, Burger } from "@mantine/core";
 import { useGlobalContext } from "../context";
 import { refreshToken } from "../utils/RedditAPI";
 import ColorSchemeToggle from "./internal/ColorSchemeToggle";
@@ -14,6 +14,7 @@ function TopBar() {
   return (
     <div>
       <Header height={60} p="xs" sx={{ display: "flex", flexDirection: "row", gap: 15, alignItems: 'center' }}>
+        <Burger opened={false} />
         {user ? (
           <p>{user}</p>
         ) : (

@@ -8,6 +8,9 @@ import {
   Avatar,
   ActionIcon,
   Badge,
+  Space,
+  Image,
+  TypographyStylesProvider
 } from "@mantine/core";
 import {
   ArrowFatUp,
@@ -20,7 +23,9 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { useNavigate } from "react-router-dom";
-import {Comment} from './'
+import { Comment } from "./";
+import { Carousel } from "@mantine/carousel";
+import ReactPlayer from "react-player";
 
 interface PostProps {
   subid: string | undefined;
@@ -34,7 +39,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
       theme.colorScheme === "dark"
         ? theme.colors.dark[5]
         : theme.colors.gray[1],
-    maxWidth: 400,
+    maxWidth: 600,
     width: "100%",
     height: "auto",
     padding: 20,
@@ -42,6 +47,32 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     marginRight: "auto",
     borderRadius: theme.radius.sm,
   },
+  comments: {
+    backgroundColor:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[6]
+        : theme.colors.gray[0],
+    maxWidth: 600,
+    width: "100%",
+    height: "auto",
+    marginLeft: "auto",
+    marginRight: "auto",
+    borderRadius: theme.radius.sm,
+    "& .heading": {
+      padding: 8,
+    },
+  },
+  media: {
+    width:'90%',
+  },
+  lineclamp: {
+    lineClamp: 3,
+    overflow: 'hidden',
+    "& *": {
+      // lineClamp: 1,
+      // color: 'blue'
+    },
+  }
 }));
 
 function PostComponent({ subid, id, name }: PostProps) {
@@ -102,14 +133,24 @@ function PostComponent({ subid, id, name }: PostProps) {
           </Text>
           <Text>{data?.author}</Text>
         </Group>
-        <Text weight={700} lineClamp={2}>
-          {data?.title}
-        </Text>
+        <Text weight={700}>{data?.title}</Text>
         {data?.link_flair_richtext && data?.link_flair_richtext[0] && (
           <Badge>{data?.link_flair_richtext[0].t}</Badge>
         )}
+        {data.spoiler && <Badge variant="outline" >spoiler</Badge>}
         {/* <Text lineClamp={4}>{body}</Text> */}
-        <ReactMarkdown children={data?.selftext} rehypePlugins={[rehypeRaw]} />
+        {/* <ReactMarkdown children={data?.selftext} rehypePlugins={[rehypeRaw]} /> */}
+        <TypographyStylesProvider>
+          <div className={classes.lineclamp} dangerouslySetInnerHTML={{ __html: data?.selftext_html }} />
+        </TypographyStylesProvider>
+        {data.post_hint==="image" && <Image className={classes.media} withPlaceholder src={data.url}/>}
+        {data.is_video && <ReactPlayer width={'fill'} controls url={`${data.media.reddit_video.fallback_url}`} />}
+        {data.is_gallery && <Carousel sx={{ maxWidth: 320 }} mx="auto" withIndicators height={200}>
+          {data.gallery_data.items.map((item:any)=>(
+            //TODO: select url based on jpg or png image
+            <Carousel.Slide><Image withPlaceholder src={`https://i.redd.it/${item.media_id}.jpg`}/></Carousel.Slide>
+          ))}
+        </Carousel>}
 
         <Group>
           <ActionIcon variant="transparent" onClick={() => handleClick(1)}>
@@ -133,13 +174,18 @@ function PostComponent({ subid, id, name }: PostProps) {
           </ActionIcon>
         </Group>
       </div>
-      <div className={classes.wrapper}>
+      <Space h="xs" />
+      <div className={classes.comments}>
+        <Group className="heading">
+          <Text>Comments</Text>
+        </Group>
         {commentData.map((child: any) => {
           return (
             <Comment
               postedAt={child.data.created_utc}
               author={child.data.author}
               body={child.data.body_html}
+              replies={child.data.replies?.data?.children}
             />
           );
         })}

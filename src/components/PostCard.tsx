@@ -1,3 +1,4 @@
+import { Carousel } from "@mantine/carousel";
 import {
   ActionIcon,
   Avatar,
@@ -5,6 +6,8 @@ import {
   Text,
   createStyles,
   Badge,
+  Image,
+  TypographyStylesProvider,
 } from "@mantine/core";
 import {
   ArrowFatUp,
@@ -43,7 +46,6 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 function PostCard({ data, access }: CardProps) {
   const { classes } = useStyles();
   const navigate = useNavigate();
-  const flair = data.link_flair_richtext;
   const formatter = new Intl.NumberFormat('en',{notation:'compact'})
   
   const [vote, setVote] = useState(data.likes); //reddit api: likes = (true, null, false) for (up, no, down)votes
@@ -74,17 +76,30 @@ function PostCard({ data, access }: CardProps) {
         <Text variant="link" onClick={()=>{navigate(`/r/${data.subreddit}`)}} >{data.subreddit}</Text>
         <Text >{data.author}</Text>
       </Group>
+
       <section onClick={()=>navigate(`${data.permalink}`)} >
-      <Text weight={700} lineClamp={2}>
+      <Text weight={700}>
         {data.title}
       </Text>
-      {flair && flair[0] && <Badge>{flair[0].t}</Badge>}
+      {data?.link_flair_richtext && data?.link_flair_richtext[0] && (
+          <Badge>{data?.link_flair_richtext[0].t}</Badge>
+        )}
+        {data.spoiler && <Badge variant="outline" >spoiler</Badge>}
       {/* <Text lineClamp={4}>{body}</Text> */}
-      <ReactMarkdown
+      {/* <ReactMarkdown
         children={data.selftext.slice(0, 180)}
         rehypePlugins={[rehypeRaw]}
-      />
+      /> */}
+      <TypographyStylesProvider  >
+        <div dangerouslySetInnerHTML={{ __html: data.selftext_html }} />
+      </TypographyStylesProvider>
       </section>
+      {data.is_gallery && <Carousel sx={{ maxWidth: 320 }} mx="auto" withIndicators height={200}>
+          {data.gallery_data.items.map((item:any)=>{
+            let imgurl=`https://i.redd.it/${item.media_id}.jpg`
+            return <Carousel.Slide><Image withPlaceholder src={imgurl}/></Carousel.Slide>
+          })}
+        </Carousel>}
 
       <Group>
         <ActionIcon variant="transparent" onClick={() => handleClick(1)}>

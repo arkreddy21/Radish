@@ -77,7 +77,7 @@ export const getHomePage = async (access: string, after?:string) => {
   after ? console.log(after) : console.log("no after came")
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
-    params: after? {"after":after, "raw_json": '1'} : {}
+    params: after? {"after":after, "raw_json": '1'} : {"raw_json": '1'}
   });
   return res.data;
 };
