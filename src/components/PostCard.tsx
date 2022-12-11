@@ -17,9 +17,7 @@ import {
   DotsThreeVertical,
 } from "phosphor-react";
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
-import rehypeRaw from "rehype-raw";
 import { castVote } from "../utils/RedditAPI";
 
 interface CardProps {
