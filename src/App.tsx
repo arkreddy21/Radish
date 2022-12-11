@@ -39,7 +39,7 @@ function App() {
         >
           <QueryClientProvider client={queryClient}>
             <AppShell
-              padding="md"
+              padding={0}
               navbarOffsetBreakpoint="sm"
               navbar={<SideBar />}
               header={<TopBar />}

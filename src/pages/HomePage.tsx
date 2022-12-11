@@ -1,36 +1,63 @@
-import {SegmentedControl, Text} from "@mantine/core";
-import { useQuery, useInfiniteQuery } from "react-query";
+import { SegmentedControl, Text, createStyles } from "@mantine/core";
+import { useInfiniteQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { PostCard} from "../components";
+import { PostCard } from "../components";
 import { useGlobalContext } from "../context";
-import { getHomePage} from "../utils/RedditAPI";
+import { getHomePage } from "../utils/RedditAPI";
+
+const useStyles = createStyles((theme) => ({
+  page: {
+    overflowY: "scroll",
+    height: "calc(100vh - 60px)", //minus height of header
+    backgroundColor:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[8]
+        : theme.colors.gray[0],
+  },
+  posts: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+  },
+}));
 
 function HomePage() {
-  const {tokens, isEnabled } = useGlobalContext();
+  const { classes } = useStyles();
+  const { tokens, isEnabled } = useGlobalContext();
   //TODO: useQuery fetching even when enabled: false?
-  //TODO? include access token in query key
-  const { isLoading, isFetchingNextPage, data, fetchNextPage } = useInfiniteQuery(
-    ["home-page",tokens, isEnabled], ({pageParam}) => getHomePage(tokens.access, pageParam),
-    { enabled: isEnabled, getNextPageParam:(lastpage,pages)=>{console.log(lastpage.data.after);return lastpage.data.after} }
-  );
+  const { isLoading, isFetchingNextPage, data, fetchNextPage } =
+    useInfiniteQuery(
+      ["home-page", tokens, isEnabled],
+      ({ pageParam }) => getHomePage(tokens.access, pageParam),
+      {
+        enabled: isEnabled,
+        getNextPageParam: (lastpage, pages) => {
+          console.log(lastpage.data.after);
+          return lastpage.data.after;
+        },
+      }
+    );
   const [sort, setSort] = useState("best");
 
   useEffect(() => {
-    console.log(isEnabled)
+    console.log(isEnabled);
   }, [isEnabled]);
 
-  useEffect(()=>{
-    const event:any= window.addEventListener('scroll',()=>{
-      if(!isLoading && window.innerHeight+window.scrollY >= document.body.scrollHeight-8 ){
-        fetchNextPage()
-      }})
-    return ()=>window.removeEventListener('scroll',event)
-  },[])
+  const handleScroll = (e: any) => {
+    if (
+      !isLoading &&
+      e.currentTarget.scrollTop + e.currentTarget.offsetHeight >=
+        e.currentTarget.scrollHeight - 10
+    ) {
+      fetchNextPage();
+      console.log("home fetching next page");
+    }
+  };
 
   if (isLoading) return <h3>Loading</h3>;
 
   return (
-    <>
+    <div className={classes.page} onScroll={handleScroll}>
       <div>HomePage</div>
       <SegmentedControl
         value={sort}
@@ -42,18 +69,17 @@ function HomePage() {
           { label: "top", value: "top" },
         ]}
       />
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        
-        {data?.pages.map((group, i)=>(
+      <div className={classes.posts}>
+        {data?.pages.map((group, i) => (
           <>
             {group.data.children.map((child: any) => {
-          return <PostCard data={child.data} access = {tokens.access} />;
-        })}
+              return <PostCard data={child.data} access={tokens.access} />;
+            })}
           </>
         ))}
       </div>
-      <Text>{isFetchingNextPage ? 'Loading more...' : ''}</Text>
-    </>
+      <Text>{isFetchingNextPage ? "Loading more..." : ""}</Text>
+    </div>
   );
 }
 

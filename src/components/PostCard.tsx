@@ -85,14 +85,12 @@ function PostCard({ data, access }: CardProps) {
           <Badge>{data?.link_flair_richtext[0].t}</Badge>
         )}
         {data.spoiler && <Badge variant="outline" >spoiler</Badge>}
-      {/* <Text lineClamp={4}>{body}</Text> */}
-      {/* <ReactMarkdown
-        children={data.selftext.slice(0, 180)}
-        rehypePlugins={[rehypeRaw]}
-      /> */}
-      <TypographyStylesProvider  >
-        <div dangerouslySetInnerHTML={{ __html: data.selftext_html }} />
-      </TypographyStylesProvider>
+
+      <Text lineClamp={5} >
+        <TypographyStylesProvider  >
+          <div dangerouslySetInnerHTML={{ __html: data.selftext_html }} />
+        </TypographyStylesProvider>
+      </Text>
       </section>
       {data.is_gallery && <Carousel sx={{ maxWidth: 320 }} mx="auto" withIndicators height={200}>
           {data.gallery_data.items.map((item:any)=>{

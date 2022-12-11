@@ -90,11 +90,12 @@ export const getAboutsub = async (access:string, subid: string|undefined) => {
   return res.data;
 }
 
-export const getSubPosts = async (access:string, subid: string|undefined) => {
+export const getSubPosts = async (access:string, subid: string|undefined, after?:string) => {
   const url: string = access ? `https://oauth.reddit.com/r/${subid}` : `https://www.reddit.com/r/${subid}.json`;
+  after ? console.log(after) : console.log("no after came");
   const res = await axios(url, {
     headers: access? { Authorization: `Bearer ${access}` } : {},
-    params:{"raw_json":'1'}
+    params: after? {"after":after, "raw_json": '1'} : {"raw_json": '1'}
   });
   return res.data;
 }

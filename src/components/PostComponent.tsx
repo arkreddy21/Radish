@@ -20,8 +20,6 @@ import {
   DotsThreeVertical,
 } from "phosphor-react";
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import { useNavigate } from "react-router-dom";
 import { Comment } from "./";
 import { Carousel } from "@mantine/carousel";
@@ -64,14 +62,6 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   },
   media: {
     width:'90%',
-  },
-  lineclamp: {
-    lineClamp: 3,
-    overflow: 'hidden',
-    "& *": {
-      // lineClamp: 1,
-      // color: 'blue'
-    },
   }
 }));
 
@@ -97,7 +87,7 @@ function PostComponent({ subid, id, name }: PostProps) {
   //TODO: handle derived state
   const [vote, setVote] = useState(data?.likes); //reddit api: likes = (true, null, false) for (up, no, down)votes
 
-  const handleClick = (dir: number) => {
+  const handleVote = (dir: number) => {
     if (vote === null) {
       castVote(tokens.access, data.name, dir).then((res) => {
         res === 200 && setVote(dir === 1 ? true : false);
@@ -138,10 +128,9 @@ function PostComponent({ subid, id, name }: PostProps) {
           <Badge>{data?.link_flair_richtext[0].t}</Badge>
         )}
         {data.spoiler && <Badge variant="outline" >spoiler</Badge>}
-        {/* <Text lineClamp={4}>{body}</Text> */}
-        {/* <ReactMarkdown children={data?.selftext} rehypePlugins={[rehypeRaw]} /> */}
+        
         <TypographyStylesProvider>
-          <div className={classes.lineclamp} dangerouslySetInnerHTML={{ __html: data?.selftext_html }} />
+          <div dangerouslySetInnerHTML={{ __html: data?.selftext_html }} />
         </TypographyStylesProvider>
         {data.post_hint==="image" && <Image className={classes.media} withPlaceholder src={data.url}/>}
         {data.is_video && <ReactPlayer width={'fill'} controls url={`${data.media.reddit_video.fallback_url}`} />}
@@ -153,11 +142,11 @@ function PostComponent({ subid, id, name }: PostProps) {
         </Carousel>}
 
         <Group>
-          <ActionIcon variant="transparent" onClick={() => handleClick(1)}>
+          <ActionIcon variant="transparent" onClick={() => handleVote(1)}>
             <ArrowFatUp size={18} weight={vote === true ? "fill" : "regular"} />
           </ActionIcon>
           <Text>{formatter.format(data?.score)}</Text>
-          <ActionIcon variant="transparent" onClick={() => handleClick(-1)}>
+          <ActionIcon variant="transparent" onClick={() => handleVote(-1)}>
             <ArrowFatDown
               size={18}
               weight={vote === false ? "fill" : "regular"}
