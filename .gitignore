@@ -26,3 +26,4 @@ dist-ssr
 .env
 src/utils/scratch.js
 .vercel
+actions.txt

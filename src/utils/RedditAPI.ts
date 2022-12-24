@@ -119,3 +119,15 @@ export const getComments = async (access:string, subid:string|undefined, id:stri
   });
   return res.data
 }
+
+export const postComment = async(access:string, thing_id:string, text:string) => {
+  const url = "https://oauth.reddit.com/api/comment";
+  const form = new FormData();
+  form.append("thing_id", thing_id);
+  form.append("text", text);
+  const res = await axios.post(url, form, {
+    headers:  { Authorization: `Bearer ${access}` },
+  });
+  console.log(res);
+  return res;
+}

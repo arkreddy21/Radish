@@ -1,4 +1,4 @@
-import { SegmentedControl, Text, createStyles } from "@mantine/core";
+import { SegmentedControl, Text, createStyles, ScrollArea } from "@mantine/core";
 import { useInfiniteQuery } from "react-query";
 import { useEffect, useState } from "react";
 import { PostCard } from "../components";
@@ -7,13 +7,14 @@ import { getHomePage } from "../utils/RedditAPI";
 
 const useStyles = createStyles((theme) => ({
   page: {
-    overflowY: "scroll",
+    overflowY: "auto",
     height: "calc(100vh - 60px)", //minus height of header
     backgroundColor:
       theme.colorScheme === "dark"
         ? theme.colors.dark[8]
         : theme.colors.gray[0],
   },
+
   posts: {
     display: "flex",
     flexDirection: "column",

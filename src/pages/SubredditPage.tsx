@@ -34,12 +34,12 @@ function SubredditPage() {
   const { classes } = useStyles();
   const { subid } = useParams();
   const { tokens, isEnabled } = useGlobalContext();
-  //TODO: when going to sub, it shows previos sub's posts. refresh when subid param is changed
-  const about = useQuery("about-sub", () => getAboutsub(tokens.access, subid), {
+  
+  const about = useQuery(["about-sub",subid,tokens,isEnabled], () => getAboutsub(tokens.access, subid), {
     enabled: subid !== "popular" && subid !== "all",
   });
   const posts = useInfiniteQuery(
-    ["sub-posts", tokens, isEnabled],
+    ["sub-posts", subid, tokens, isEnabled],
     ({ pageParam }) => getSubPosts(tokens.access, subid, pageParam),
     {
       enabled: isEnabled,

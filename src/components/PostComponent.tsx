@@ -8,9 +8,10 @@ import {
   Avatar,
   ActionIcon,
   Badge,
-  Space,
+  Button,
   Image,
-  TypographyStylesProvider
+  TypographyStylesProvider,
+  Modal,
 } from "@mantine/core";
 import {
   ArrowFatUp,
@@ -18,12 +19,15 @@ import {
   Star,
   ChatText,
   DotsThreeVertical,
+  ChatDots,
 } from "phosphor-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Comment } from "./";
 import { Carousel } from "@mantine/carousel";
+import { openModal, closeAllModals } from "@mantine/modals";
 import ReactPlayer from "react-player";
+import TextEditor from "./internal/TextEditor";
 
 interface PostProps {
   subid: string | undefined;
@@ -31,7 +35,12 @@ interface PostProps {
   name: string | undefined;
 }
 
-const useStyles = createStyles((theme, _params, getRef) => ({
+const useStyles = createStyles((theme, _params) => ({
+  page: {
+    overflowY: "auto",
+    height: "calc(100vh - 60px)", //minus height of header
+  },
+
   wrapper: {
     backgroundColor:
       theme.colorScheme === "dark"
@@ -41,6 +50,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     width: "100%",
     height: "auto",
     padding: 20,
+    marginBlock: theme.spacing.sm,
     marginLeft: "auto",
     marginRight: "auto",
     borderRadius: theme.radius.sm,
@@ -61,8 +71,8 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     },
   },
   media: {
-    width:'90%',
-  }
+    width: "90%",
+  },
 }));
 
 function PostComponent({ subid, id, name }: PostProps) {
@@ -109,7 +119,7 @@ function PostComponent({ subid, id, name }: PostProps) {
   if (postData.isLoading || !data) return <Text>Loading</Text>;
 
   return (
-    <>
+    <div className={classes.page}>
       <div className={classes.wrapper}>
         <Group>
           <Avatar radius="xl" />
@@ -127,19 +137,39 @@ function PostComponent({ subid, id, name }: PostProps) {
         {data?.link_flair_richtext && data?.link_flair_richtext[0] && (
           <Badge>{data?.link_flair_richtext[0].t}</Badge>
         )}
-        {data.spoiler && <Badge variant="outline" >spoiler</Badge>}
-        
+        {data.spoiler && <Badge variant="outline">spoiler</Badge>}
+
         <TypographyStylesProvider>
           <div dangerouslySetInnerHTML={{ __html: data?.selftext_html }} />
         </TypographyStylesProvider>
-        {data.post_hint==="image" && <Image className={classes.media} withPlaceholder src={data.url}/>}
-        {data.is_video && <ReactPlayer width={'fill'} controls url={`${data.media.reddit_video.fallback_url}`} />}
-        {data.is_gallery && <Carousel sx={{ maxWidth: 320 }} mx="auto" withIndicators height={200}>
-          {data.gallery_data.items.map((item:any)=>(
-            //TODO: select url based on jpg or png image
-            <Carousel.Slide><Image withPlaceholder src={`https://i.redd.it/${item.media_id}.jpg`}/></Carousel.Slide>
-          ))}
-        </Carousel>}
+        {data.post_hint === "image" && (
+          <Image className={classes.media} withPlaceholder src={data.url} />
+        )}
+        {data.is_video && (
+          <ReactPlayer
+            width={"fill"}
+            controls
+            url={`${data.media.reddit_video.fallback_url}`}
+          />
+        )}
+        {data.is_gallery && (
+          <Carousel
+            sx={{ maxWidth: 320 }}
+            mx="auto"
+            withIndicators
+            height={200}
+          >
+            {data.gallery_data.items.map((item: any) => (
+              //TODO: select url based on jpg or png image
+              <Carousel.Slide>
+                <Image
+                  withPlaceholder
+                  src={`https://i.redd.it/${item.media_id}.jpg`}
+                />
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        )}
 
         <Group>
           <ActionIcon variant="transparent" onClick={() => handleVote(1)}>
@@ -163,10 +193,27 @@ function PostComponent({ subid, id, name }: PostProps) {
           </ActionIcon>
         </Group>
       </div>
-      <Space h="xs" />
+
       <div className={classes.comments}>
         <Group className="heading">
           <Text>Comments</Text>
+          <Button variant="subtle" leftIcon={<ChatDots size={18} />}
+            onClick={() =>
+              openModal({
+                title: "Comment",
+                children: (
+                  <>
+                    <TypographyStylesProvider>
+                      <div dangerouslySetInnerHTML={{ __html: data?.selftext_html }} />
+                    </TypographyStylesProvider>
+                    <TextEditor thing_id={data.name} />
+                  </>
+                ),
+              })
+            }
+          >
+            reply
+          </Button>
         </Group>
         {commentData.map((child: any) => {
           return (
@@ -179,7 +226,7 @@ function PostComponent({ subid, id, name }: PostProps) {
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
 export default PostComponent;

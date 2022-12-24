@@ -8,6 +8,8 @@ import {
   Tooltip,
   ScrollArea,
   Image,
+  Avatar,
+  Flex,
 } from "@mantine/core";
 import {
   IconPlus,
@@ -32,7 +34,7 @@ const useStyles = createStyles((theme) => ({
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
     marginBottom: theme.spacing.md,
-    // overflow: 'scrollY',
+    fontSize: theme.fontSizes.xs,
 
     "&:not(:last-of-type)": {
       borderBottom: `1px solid ${
@@ -40,6 +42,11 @@ const useStyles = createStyles((theme) => ({
           ? theme.colors.dark[4]
           : theme.colors.gray[3]
       }`,
+    },
+
+    "&:last-of-type": {
+      overflowY: "auto",
+      marginBottom: 0,
     },
   },
 
@@ -99,9 +106,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   collectionsHeader: {
-    paddingLeft: theme.spacing.md + 2,
-    paddingRight: theme.spacing.md,
-    marginBottom: 5,
+    marginBottom: theme.spacing.xs,
   },
 
   collectionLink: {
@@ -109,18 +114,12 @@ const useStyles = createStyles((theme) => ({
     padding: `8px ${theme.spacing.xs}px`,
     textDecoration: "none",
     borderRadius: theme.radius.sm,
-    fontSize: theme.fontSizes.xs,
     color:
       theme.colorScheme === "dark"
         ? theme.colors.dark[0]
         : theme.colors.gray[7],
     lineHeight: 1,
     fontWeight: 500,
-
-    img: {
-      height: 24,
-      borderRadius: '50%',
-    },
 
     "&:hover": {
       backgroundColor:
@@ -138,31 +137,15 @@ const links = [
   { icon: IconChartBar, label: "All", path:"/r/all" },
 ];
 
-const scratch =
-  "https://b.thumbs.redditmedia.com/fMiXMpPkcTf7EWdUY897S7bKeqPMh5lkVOoocfkGV1w.png";
-const collections0:any = [
-  // { icon: scratch, label: "Sales" },
-  // { icon: scratch, label: "Deliveries" },
-  // { icon: scratch, label: "Discounts" },
-  // { icon: scratch, label: "Profits" },
-  // { icon: scratch, label: "Reports" },
-  // { icon: scratch, label: "Orders" },
-  // { icon: scratch, label: "Sales" },
-  // { icon: scratch, label: "Deliveries" },
-  // { icon: scratch, label: "Discounts" },
-  // { icon: scratch, label: "Profits" },
-  // { icon: scratch, label: "Reports" },
-  // { icon: scratch, label: "Orders" },
-];
 
-function SideBar() {
+function SideBar({opened}: {opened: boolean}) {
   const { classes } = useStyles();
-  const [opened, setOpened] = useState(false);
+  // const [opened, setOpened] = useState(false);
   const { tokens, isEnabled } = useGlobalContext();
   const navigate = useNavigate();
-  const [collections, setCollections] = useState(collections0)
+  const [collections, setCollections] = useState([])
   //TODO: implement subs correctly
-  const { isLoading, data } = useQuery("subs", () => getSubs(tokens.access), {
+  const { isLoading, data } = useQuery(["subs", tokens, isEnabled], () => getSubs(tokens.access), {
     enabled: isEnabled && tokens.access!=='',
     initialData: collections,
     placeholderData: collections,
@@ -184,16 +167,14 @@ function SideBar() {
   ));
 
   const collectionLinks = collections.map((collection:any) => (
-    <div
+    <Flex gap="md" align="center"
       onClick={()=>navigate(`/r/${collection.label}`)}
       key={collection.label}
       className={classes.collectionLink}
     >
-      <span style={{ marginRight: 9, fontSize: 16 }}>
-        <img src={collection.icon} />
-      </span>{" "}
-      {collection.label}
-    </div>
+      <Avatar radius="xl" size="sm" src={collection.icon}>r</Avatar>
+      <Text>{collection.label}</Text>
+    </Flex>
   ));
 
   return (
@@ -206,20 +187,19 @@ function SideBar() {
         <div className={classes.mainLinks}>{mainLinks}</div>
       </Navbar.Section>
 
-      <Navbar.Section grow component={ScrollArea} className={classes.section}>
-        <Group className={classes.collectionsHeader} position="apart">
-          <Text size="xs" weight={500} color="dimmed">
-            Subscriptions
-          </Text>
-          <Tooltip label="add subreddit" withArrow position="right">
-            <ActionIcon variant="default" size={18}>
-              <IconPlus size={12} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
-        {/* <ScrollArea> */}
+      <Group className={classes.collectionsHeader} position="apart">
+        <Text size="xs" weight={500} color="dimmed">
+          Subscriptions
+        </Text>
+        <Tooltip label="add subreddit" withArrow position="right">
+          <ActionIcon variant="default" size={18}>
+            <IconPlus size={12} stroke={1.5} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+
+      <Navbar.Section grow component={ScrollArea} scrollbarSize={6} className={classes.section}>        
         <div className={classes.collections}>{collectionLinks}</div>
-        {/* </ScrollArea> */}
       </Navbar.Section>
     </Navbar>
   );
