@@ -59,7 +59,7 @@ function HomePage() {
 
   return (
     <div className={classes.page} onScroll={handleScroll}>
-      <div>HomePage</div>
+      {/* <div>HomePage</div>
       <SegmentedControl
         value={sort}
         onChange={setSort}
@@ -69,7 +69,7 @@ function HomePage() {
           { label: "new", value: "new" },
           { label: "top", value: "top" },
         ]}
-      />
+      /> */}
       <div className={classes.posts}>
         {data?.pages.map((group, i) => (
           <>

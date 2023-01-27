@@ -72,6 +72,7 @@ const useStyles = createStyles((theme, _params) => ({
   },
   media: {
     width: "90%",
+    paddingBlock: 18
   },
 }));
 
@@ -133,7 +134,20 @@ function PostComponent({ subid, id, name }: PostProps) {
           </Text>
           <Text>{data?.author}</Text>
         </Group>
-        <Text weight={700}>{data?.title}</Text>
+        <Group position="apart">
+          <Text weight={700}>{data?.title}</Text>
+          {(data.post_hint === "link" ||
+            (!data.is_self && data.post_hint !== "image" && !data.is_video && !data.is_gallery)) && (
+            <Image
+              src={data.thumbnail}
+              radius="md"
+              width={64}
+              height={64}
+              withPlaceholder
+              onClick={() => window.open(data.url, "_blank")}
+            />
+          )}
+        </Group>
         {data?.link_flair_richtext && data?.link_flair_richtext[0] && (
           <Badge>{data?.link_flair_richtext[0].t}</Badge>
         )}
@@ -145,6 +159,7 @@ function PostComponent({ subid, id, name }: PostProps) {
         {data.post_hint === "image" && (
           <Image className={classes.media} withPlaceholder src={data.url} />
         )}
+        {/*TODO {data.post_hint === "link" && (data.url, data.thumbnail)} */}
         {data.is_video && (
           <ReactPlayer
             width={"fill"}
@@ -154,20 +169,14 @@ function PostComponent({ subid, id, name }: PostProps) {
         )}
         {data.is_gallery && (
           <Carousel
-            sx={{ maxWidth: 320 }}
             mx="auto"
             withIndicators
             height={200}
           >
-            {data.gallery_data.items.map((item: any) => (
-              //TODO: select url based on jpg or png image
-              <Carousel.Slide>
-                <Image
-                  withPlaceholder
-                  src={`https://i.redd.it/${item.media_id}.jpg`}
-                />
-              </Carousel.Slide>
-            ))}
+            {Object.entries(data.media_metadata).map(([key,item]:any)=>{
+              let imgurl=`https://i.redd.it/${item.s.u.split(/[/?]/)[3]}`
+              return <Carousel.Slide><Image withPlaceholder src={imgurl}/></Carousel.Slide>
+            })}
           </Carousel>
         )}
 
