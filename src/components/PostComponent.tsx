@@ -23,7 +23,7 @@ import {
 } from "phosphor-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Comment } from "./";
+import { Comment, Loading } from "./";
 import { Carousel } from "@mantine/carousel";
 import { openModal, closeAllModals } from "@mantine/modals";
 import ReactPlayer from "react-player";
@@ -117,7 +117,7 @@ function PostComponent({ subid, id, name }: PostProps) {
     }
   };
 
-  if (postData.isLoading || !data) return <Text>Loading</Text>;
+  if (postData.isLoading || !data) return <Loading/>;
 
   return (
     <div className={classes.page}>

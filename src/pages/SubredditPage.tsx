@@ -6,10 +6,11 @@ import {
   Image,
   Stack,
   Text,
+  Loader,
 } from "@mantine/core";
 import { useInfiniteQuery, useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { PostCard } from "../components";
+import { Loading, PostCard } from "../components";
 import { useGlobalContext } from "../context";
 import { getAboutsub, getSubPosts } from "../utils/RedditAPI";
 
@@ -61,7 +62,7 @@ function SubredditPage() {
     }
   };
 
-  if (about.isLoading || posts.isLoading) return <h3>Loading</h3>;
+  if (about.isLoading || posts.isLoading) return <Loading/>;
 
   return (
     <div className={classes.page} onScroll={handleScroll}>
@@ -97,7 +98,7 @@ function SubredditPage() {
           </>
         ))}
       </div>
-      <Text>{posts.isFetchingNextPage ? "Loading more..." : ""}</Text>
+      {posts.isFetchingNextPage && <Loader variant="dots" />}
     </div>
   );
 }

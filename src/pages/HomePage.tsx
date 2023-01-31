@@ -1,7 +1,7 @@
-import { SegmentedControl, Text, createStyles, ScrollArea } from "@mantine/core";
+import { SegmentedControl, Text, createStyles, ScrollArea, Loader, Flex } from "@mantine/core";
 import { useInfiniteQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { PostCard } from "../components";
+import { Loading, PostCard } from "../components";
 import { useGlobalContext } from "../context";
 import { getHomePage } from "../utils/RedditAPI";
 
@@ -55,7 +55,7 @@ function HomePage() {
     }
   };
 
-  if (isLoading) return <h3>Loading</h3>;
+  if (isLoading) return <Loading/>;
 
   return (
     <div className={classes.page} onScroll={handleScroll}>
@@ -79,7 +79,7 @@ function HomePage() {
           </>
         ))}
       </div>
-      <Text>{isFetchingNextPage ? "Loading more..." : ""}</Text>
+      {isFetchingNextPage && <Flex mih={50} justify="center" align="center" ><Loader variant="dots" /></Flex>}
     </div>
   );
 }
