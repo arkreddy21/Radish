@@ -1,9 +1,10 @@
-import { SegmentedControl, Text, createStyles, ScrollArea, Loader, Flex } from "@mantine/core";
+import { SegmentedControl, Text, createStyles, ScrollArea, Loader, Flex,Group } from "@mantine/core";
 import { useInfiniteQuery } from "react-query";
 import { useEffect, useState } from "react";
-import { Loading, PostCard } from "../components";
+import { Loading, PostCard, PostComponent } from "../components";
 import { useGlobalContext } from "../context";
 import { getHomePage } from "../utils/RedditAPI";
+import { useMediaQuery } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
   page: {
@@ -16,6 +17,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   posts: {
+    paddingTop: theme.spacing.sm,
     display: "flex",
     flexDirection: "column",
     gap: 8,
@@ -38,11 +40,23 @@ function HomePage() {
         },
       }
     );
+
   const [sort, setSort] = useState("best");
+  const matches = useMediaQuery('(min-width: 75em)');
+  const [showPeek, setShowPeek] = useState(false);
+  const [postProps, setPostProps] = useState({subid:'', id:'', name:''})
 
   useEffect(() => {
     console.log(isEnabled);
   }, [isEnabled]);
+  
+  useEffect(()=>{
+    postProps.id!=='' && setShowPeek(true)
+  },[postProps])
+
+  const handleSidePeek = (subid:string, id:string, name:string) => {
+    postProps.id === id ? (setShowPeek(false),setPostProps({subid:'', id:'', name:''})) : setPostProps({subid, id, name})
+  }
 
   const handleScroll = (e: any) => {
     if (
@@ -58,6 +72,7 @@ function HomePage() {
   if (isLoading) return <Loading/>;
 
   return (
+    <Group grow >
     <div className={classes.page} onScroll={handleScroll}>
       {/* <div>HomePage</div>
       <SegmentedControl
@@ -74,13 +89,15 @@ function HomePage() {
         {data?.pages.map((group, i) => (
           <>
             {group.data.children.map((child: any) => {
-              return <PostCard data={child.data} access={tokens.access} />;
+              return <PostCard data={child.data} access={tokens.access} handleSidePeek={handleSidePeek} />;
             })}
           </>
         ))}
       </div>
       {isFetchingNextPage && <Flex mih={50} justify="center" align="center" ><Loader variant="dots" /></Flex>}
     </div>
+    { showPeek && matches && <PostComponent subid={postProps.subid} id={postProps.id} name={postProps.name} />}
+    </Group>
   );
 }
 

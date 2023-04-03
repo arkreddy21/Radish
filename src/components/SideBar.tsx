@@ -17,7 +17,7 @@ import {
   IconHome2,
   IconTrendingUp,
   IconChartBar,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { UserButton } from "./internal/UserButton";
 import { getSubs } from "../utils/RedditAPI";
 import { useGlobalContext } from "../context";
@@ -31,8 +31,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   section: {
-    marginLeft: -theme.spacing.md,
-    marginRight: -theme.spacing.md,
+    marginLeft:`calc(${theme.spacing.md} * -1)`,
+    marginRight: `calc(${theme.spacing.md} * -1)`,
     marginBottom: theme.spacing.md,
     fontSize: theme.fontSizes.xs,
 
@@ -51,8 +51,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   mainLinks: {
-    paddingLeft: theme.spacing.md - theme.spacing.xs,
-    paddingRight: theme.spacing.md - theme.spacing.xs,
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
     paddingBottom: theme.spacing.md,
   },
 
@@ -61,7 +61,7 @@ const useStyles = createStyles((theme) => ({
     alignItems: "center",
     width: "100%",
     fontSize: theme.fontSizes.xs,
-    padding: `8px ${theme.spacing.xs}px`,
+    padding: `8px ${theme.spacing.xs}`,
     borderRadius: theme.radius.sm,
     fontWeight: 500,
     color:
@@ -100,8 +100,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   collections: {
-    paddingLeft: theme.spacing.md - 6,
-    paddingRight: theme.spacing.md - 6,
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
     paddingBottom: theme.spacing.md,
   },
 
@@ -111,7 +111,7 @@ const useStyles = createStyles((theme) => ({
 
   collectionLink: {
     display: "block",
-    padding: `8px ${theme.spacing.xs}px`,
+    padding: `8px ${theme.spacing.xs}`,
     textDecoration: "none",
     borderRadius: theme.radius.sm,
     color:
@@ -178,7 +178,7 @@ function SideBar({opened}: {opened: boolean}) {
   ));
 
   return (
-    <Navbar width={{ sm: 300 }} p="md" hiddenBreakpoint="sm" hidden={!opened} className={classes.navbar}>
+    <Navbar width={{ sm: 300 }} p="md" hiddenBreakpoint="xl" hidden={!opened} className={classes.navbar}>
       <Navbar.Section className={classes.section}>
         <UserButton />
       </Navbar.Section>

@@ -4,11 +4,14 @@ import {
   Avatar,
   Group,
   Text,
+  Anchor,
   createStyles,
   Badge,
   Image,
   TypographyStylesProvider,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconChevronRight } from "@tabler/icons-react";
 import {
   ArrowFatUp,
   ArrowFatDown,
@@ -24,6 +27,7 @@ import { castVote } from "../utils/RedditAPI";
 interface CardProps {
   data: any;
   access: string;
+  handleSidePeek: (subid:string, id:string, name:string )=>void;
 }
 
 const useStyles = createStyles((theme, _params, getRef) => ({
@@ -40,16 +44,27 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     marginRight: "auto",
     borderRadius: theme.radius.sm,
   },
+  title: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    "& > .chevronright": {
+      marginLeft: 'auto'
+    }
+  },
   media: {
     width: "90%",
     paddingBlock: 18
   },
 }));
 
-function PostCard({ data, access }: CardProps) {
+function PostCard({ data, access, handleSidePeek }: CardProps) {
   const { classes } = useStyles();
   const navigate = useNavigate();
   const formatter = new Intl.NumberFormat("en", { notation: "compact" });
+  let linkArr = data.permalink.split("/")
+  const matches = useMediaQuery('(min-width: 75em)');
 
   const [vote, setVote] = useState(data.likes); //reddit api: likes = (true, null, false) for (up, no, down)votes
 
@@ -74,22 +89,22 @@ function PostCard({ data, access }: CardProps) {
 
   return (
     <div className={classes.wrapper}>
-      <Group>
+      <div className={classes.title} >
         <Avatar radius="xl" />
-        <Text
-          variant="link"
+        <Anchor
           onClick={() => {
             navigate(`/r/${data.subreddit}`);
           }}
         >
           {data.subreddit}
-        </Text>
+        </Anchor>
         <Text>{data.author}</Text>
-      </Group>
+        {matches && <IconChevronRight className="chevronright" onClick={()=>handleSidePeek(linkArr[2], linkArr[4], linkArr[5])} />}
+      </div>
 
       <section onClick={() => navigate(`${data.permalink}`)}>
         <Group position="apart">
-          <Text weight={700}>{data?.title}</Text>
+          <Text sx={{cursor: 'pointer'}} weight={700}>{data?.title}</Text>
           {/* TODO: post_hint="link" not always present in data */}
           {(data.post_hint === "link" ||
             (!data.is_self && data.post_hint !== "image" && !data.is_video && !data.is_gallery)) && (
@@ -109,7 +124,7 @@ function PostCard({ data, access }: CardProps) {
         )}
         {data.spoiler && <Badge variant="outline">spoiler</Badge>}
 
-        <Text lineClamp={5}>
+        <Text sx={{cursor: 'pointer'}} lineClamp={5}>
           <TypographyStylesProvider>
             <div dangerouslySetInnerHTML={{ __html: data.selftext_html }} />
           </TypographyStylesProvider>
@@ -128,7 +143,9 @@ function PostCard({ data, access }: CardProps) {
       {data.is_gallery && (
         <Carousel  mx="auto" withIndicators height={200}>
           {Object.entries(data.media_metadata).map(([key, item]: any) => {
-            let imgurl = `https://i.redd.it/${item.s.u.split(/[/?]/)[3]}`;
+            // let imgurl = `https://i.redd.it/${item.s.u.split(/[/?]/)[3]}`;
+            let imgurl=`https://i.redd.it/${item.media_id}.jpg`
+            //TODO error with item.s.u but item.media_id may not always be jpg
             return (
               <Carousel.Slide>
                 <Image withPlaceholder src={imgurl} />

@@ -1,6 +1,6 @@
-import { Header, Button, Burger } from "@mantine/core";
+import { Header, Button, Burger, Text } from "@mantine/core";
 import { useGlobalContext } from "../context";
-import { refreshToken } from "../utils/RedditAPI";
+import { useMediaQuery } from '@mantine/hooks';
 import ColorSchemeToggle from "./internal/ColorSchemeToggle";
 
 function TopBar({opened, setOpened}:{opened:boolean, setOpened:React.Dispatch<React.SetStateAction<boolean>>}) {
@@ -9,19 +9,19 @@ function TopBar({opened, setOpened}:{opened:boolean, setOpened:React.Dispatch<Re
   const authurl = `https://www.reddit.com/api/v1/authorize?client_id=${client}&response_type=code&state=${localStorage.getItem(
     "state_str"
   )}&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fredirect&duration=permanent&scope=identity mysubreddits read vote submit report save subscribe history`;
-  const { user,tokens,setTokens } = useGlobalContext();
+  const { user } = useGlobalContext();
+  const matches = useMediaQuery('(max-width: 88em)');
 
   return (
     <div>
       <Header height={60} p="xs" sx={{ display: "flex", flexDirection: "row", gap: 15, alignItems: 'center' }}>
-        <Burger opened={opened} onClick={() => setOpened((o:boolean) => !o)} />
-        {user ? (
-          <p>{user}</p>
-        ) : (
+        {matches && <Burger opened={opened} onClick={() => setOpened((o:boolean) => !o)} />}
+        <Text c='blue.6' fz='lg' >Radish</Text>
+        {user.length===0 &&
           <Button component="a" href={authurl}>
             login
           </Button>
-        )}
+        }
         <ColorSchemeToggle />
       </Header>
     </div>

@@ -44,7 +44,7 @@ function App() {
             <QueryClientProvider client={queryClient}>
               <AppShell
                 padding={0}
-                navbarOffsetBreakpoint="sm"
+                navbarOffsetBreakpoint="xl"
                 navbar={<SideBar opened={opened} />}
                 header={<TopBar opened={opened} setOpened={setOpened} />}
                 styles={(theme) => ({

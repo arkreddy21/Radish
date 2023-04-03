@@ -11,8 +11,8 @@ import {
 
 const useStyles = createStyles((theme) => ({
   comment: {
-    padding: `${theme.spacing.xs}px ${theme.spacing.xs}px`,
-    marginBottom: `${theme.spacing.xs}px`,
+    padding: `${theme.spacing.xs} ${theme.spacing.xs}`,
+    marginBottom: `${theme.spacing.xs}`,
     borderRadius:0,
     borderLeft: `2px solid ${theme.colors.blue[3]}`,
     "& .comment": {
@@ -25,6 +25,7 @@ const useStyles = createStyles((theme) => ({
     paddingLeft: theme.spacing.sm,
     paddingTop: theme.spacing.sm,
     fontSize: theme.fontSizes.sm,
+    overflowWrap: "break-word"
   },
 
   content: {

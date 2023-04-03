@@ -8,7 +8,7 @@ import {
   Accordion,
   Button,
 } from "@mantine/core";
-import { IconChevronRight, IconSelector } from "@tabler/icons";
+import { IconChevronRight, IconSelector } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../context";
 
@@ -16,7 +16,7 @@ const useStyles = createStyles((theme) => ({
   user: {
     display: "block",
     width: "100%",
-    padding: theme.spacing.md,
+    padding: theme.spacing.xs,
     color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
   },
   control: {

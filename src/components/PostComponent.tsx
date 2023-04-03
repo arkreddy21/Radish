@@ -4,6 +4,7 @@ import { castVote, getComments } from "../utils/RedditAPI";
 import {
   createStyles,
   Text,
+  Anchor,
   Group,
   Avatar,
   ActionIcon,
@@ -85,7 +86,7 @@ function PostComponent({ subid, id, name }: PostProps) {
   const [data, setData]: any = useState();
   const [commentData, setCommentData]: any = useState();
   const postData = useQuery(
-    "comments",
+    ["comments",tokens,subid,id,name],
     () => getComments(tokens.access, subid, id, name),
     {
       onSuccess: (Tdata) => {
@@ -124,14 +125,13 @@ function PostComponent({ subid, id, name }: PostProps) {
       <div className={classes.wrapper}>
         <Group>
           <Avatar radius="xl" />
-          <Text
-            variant="link"
+          <Anchor
             onClick={() => {
               navigate(`/r/${data.subreddit}`);
             }}
           >
             {data?.subreddit}
-          </Text>
+          </Anchor>
           <Text>{data?.author}</Text>
         </Group>
         <Group position="apart">
